@@ -1,0 +1,807 @@
+swagger: '2.0'
+info:
+  description: >-
+    The Investment Products service for providing accounting and transactional
+    information.
+  version: 1.0.0
+  title: Investment Products
+  termsOfService: TBD
+  contact:
+    name: API Design Team
+    url: 'http://confluence.agile.bns/display/API/BaaS+API+Design+Home'
+  license:
+    name: Investment Products
+basePath: /v1/
+tags:
+  - name: Investment Products
+    description: >-
+      The Investments Products service defines non-fund based investment
+      instruments such as Term Deposits, which are applicable to Retail Banking
+      Clients
+paths:
+  '/investments/':
+    get:
+      tags:
+        - Investment Products
+      summary: Get the list of all the Investment Products associated with the customer
+      description: >-
+        Provides a collection of Investment Products associated with the
+        customer.
+      operationId: Investment Products
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: Passport JWT
+          required: true
+          type: string
+        - name: type
+          in: query
+          type: string
+          required: false
+          description: Filtering on type of Account
+      responses:
+        '200':
+          description: Return investment product details
+          schema:
+            $ref: '#/definitions/Products'
+          headers:
+            links:
+              type: string
+              description: >-
+                Example:
+                https://api.scotiabank.com/accounts/repos?cursor=1233112
+        '204':
+          description: No content
+        '400':
+          description: >-
+            Indicates that the server could not understand the request. This is
+            not the same as 422 which indicates a validation error
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: >-
+            Unauthorized.  This will be returned when no authentication
+            information is provided.
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: >-
+            The principal associated with the request does not have sufficient
+            rights to perform this operation on the requested resource.
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: The requested resource was not found.
+          schema:
+            $ref: '#/definitions/Error'
+        '422':
+          description: >-
+            The request was syntactically correct but was not semantically
+            correct. Usually indicating a validation problem.
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Error'
+  '/investments/{key}':
+    get:
+      tags:
+        - Investment Products
+      summary: Get a specified investment product
+      description: Provides a specific investment product associated with a customer.
+      operationId: investment product Detail
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: Passport JWT
+          required: true
+          type: string
+        - name: key
+          in: path
+          type: string
+          required: true
+          description: The unique identifier for the product / account
+      responses:
+        '200':
+          description: Return investment product details
+          schema:
+            $ref: '#/definitions/InvestmentProduct'
+        '204':
+          description: No content
+        '400':
+          description: >-
+            Indicates that the server could not understand the request. This is
+            not the same as 422 which indicates a validation error
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: >-
+            Unauthorized.  This will be returned when no authentication
+            information is provided.
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: >-
+            The principal associated with the request does not have sufficient
+            rights to perform this operation on the requested resource.
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: The requested resource was not found.
+          schema:
+            $ref: '#/definitions/Error'
+        '422':
+          description: >-
+            The request was syntactically correct but was not semantically
+            correct. Usually indicating a validation problem.
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Error'
+  '/investments/{key}/transactions':
+    get:
+      tags:
+        - Investment Products
+      summary: Get the list of investment product transactions
+      parameters:
+        - name: Authorization
+          description: Passport JWT
+          type: string
+          in: header
+          required: true
+        - name: key
+          description: The BaaS key for the product / account ID
+          in: path
+          required: true
+          type: string
+        - name: from-date
+          in: query
+          description: The date from which we are searching for investment product transactions
+          required: true
+          type: string
+        - name: to-date
+          in: query
+          description: The date to which we are searching for investment product transactions
+          required: true
+          type: string          
+        - name: cursor
+          in: query
+          type: string
+          description: Key for select next records FirstTime - Empty; NextTime - Last KeyLastRecord
+        - name: cursor_entries
+          in: query
+          type: string
+          description: Entries per page of records retrieved        
+      description: >
+        Provide an array of all transactions associated with a specified
+        investment product.
+      operationId: transactions
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Return Transactions
+          schema:
+            $ref: '#/definitions/Transactions'
+          headers:
+            links:
+              type: string
+              description: >-
+                Example:
+                https://api.scotiabank.com/accounts/repos?cursor=1233112
+        '204':
+          description: No content
+        '400':
+          description: >-
+            Indicates that the server could not understand the request. This is
+            not the same as 422 which indicates a validation error
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: >-
+            Unauthorized.  This will be returned when no authentication
+            information is provided.
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: >-
+            The principal associated with the request does not have sufficient
+            rights to perform this operation on the requested resource.
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: The requested resource was not found.
+          schema:
+            $ref: '#/definitions/Error'
+        '422':
+          description: >-
+            The request was syntactically correct but was not semantically
+            correct. Usually indicating a validation problem.
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Error'
+  '/acquire-investments':
+    post:
+      tags:
+        - Investment Products adquisition
+      summary: create a process to buy a term deposit
+      parameters:
+        - name: Authorization
+          description: Passport JWT
+          type: string
+          in: header
+          required: true
+      description: >
+        Creates a process to buy investments products. The first step retrieves information and entitlements to run simulations.
+      operationId: acquire_investments
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Return entitlements and conditions for investments
+          schema:
+            $ref: '#/definitions/AcquireStart'
+        '204':
+          description: No content
+        '400':
+          description: >-
+            Indicates that the server could not understand the request. This is
+            not the same as 422 which indicates a validation error
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: >-
+            Unauthorized.  This will be returned when no authentication
+            information is provided.
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: >-
+            The principal associated with the request does not have sufficient
+            rights to perform this operation on the requested resource.
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: The requested resource was not found.
+          schema:
+            $ref: '#/definitions/Error'
+        '422':
+          description: >-
+            The request was syntactically correct but was not semantically
+            correct. Usually indicating a validation problem.
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Error'
+  '/acquire-investments/{key}':
+    get:
+      tags:
+        - Investment Products adquisition
+      summary: update an opearation
+      parameters:
+        - name: Authorization
+          description: Passport JWT
+          type: string
+          in: header
+          required: true
+        - name: key
+          type: string
+          description: BaaS unique key
+          in: path
+          required: true
+        - name: request_body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AcquireUpdate'
+
+      description: >
+        Creates a process to buy investments products. The first step retrieves information and entitlements to run simulations.
+      operationId: get_buying_operation
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Return entitlements and conditions for investments
+          schema:
+            allOf:
+            - $ref: '#/definitions/AcquireUpdate'
+            - properties:
+                status:
+                  type: string
+                  description: status of the current operation
+                  example: "READY"
+        '203':
+          description: Return entitlements and conditions for investments
+          schema:
+            allOf:
+            - $ref: '#/definitions/AcquireUpdate'
+            - properties:
+                status:
+                  type: string
+                  description: status of the current operation
+                  example: "SIGNATURE REQUIRED"
+                signature_url:
+                  type: string
+                  description: url to sign this operation if required.
+                  example: "http://apis.scotiabank.com/v1/security/signatures/"
+        '204':
+          description: No content
+        '400':
+          description: >-
+            Indicates that the server could not understand the request. This is
+            not the same as 422 which indicates a validation error
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: >-
+            Unauthorized.  This will be returned when no authentication
+            information is provided.
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: >-
+            The principal associated with the request does not have sufficient
+            rights to perform this operation on the requested resource.
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: The requested resource was not found.
+          schema:
+            $ref: '#/definitions/Error'
+        '422':
+          description: >-
+            The request was syntactically correct but was not semantically
+            correct. Usually indicating a validation problem.
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      tags:
+        - Investment Products adquisition
+      summary: update an opearation
+      parameters:
+        - name: Authorization
+          description: Passport JWT
+          type: string
+          in: header
+          required: true
+        - name: key
+          type: string
+          description: BaaS unique key
+          in: path
+          required: true
+        - name: request_body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AcquireUpdate'
+
+      description: >
+        Creates a process to buy investments products. The first step retrieves information and entitlements to run simulations.
+      operationId: update_buying_operation
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Return entitlements and conditions for investments
+          schema:
+            allOf:
+            - $ref: '#/definitions/AcquireUpdate'
+            - properties:
+                status:
+                  type: string
+                  description: status of the current operation
+                  example: "READY"
+        '203':
+          description: Return entitlements and conditions for investments
+          schema:
+            allOf:
+            - $ref: '#/definitions/AcquireUpdate'
+            - properties:
+                status:
+                  type: string
+                  description: status of the current operation
+                  example: "SIGNATURE REQUIRED"
+                signature_url:
+                  type: string
+                  description: url to sign this operation if required.
+                  example: "http://apis.scotiabank.com/v1/security/signatures/"
+        '204':
+          description: No content
+        '400':
+          description: >-
+            Indicates that the server could not understand the request. This is
+            not the same as 422 which indicates a validation error
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: >-
+            Unauthorized.  This will be returned when no authentication
+            information is provided.
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: >-
+            The principal associated with the request does not have sufficient
+            rights to perform this operation on the requested resource.
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: The requested resource was not found.
+          schema:
+            $ref: '#/definitions/Error'
+        '422':
+          description: >-
+            The request was syntactically correct but was not semantically
+            correct. Usually indicating a validation problem.
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Error'
+  
+definitions:
+  Products:
+    description: An array of Investment Product Accounts
+    type: array
+    items:
+      $ref: '#/definitions/Product'
+  Product:
+    type: object
+    description: >-
+      Product entity in its minimum projection data model. Contains basic
+      information about any product within Scotiabank, including location and
+      ownership information.
+    properties:
+      key:
+        description: This Key uniquely identifies this Product / Account.
+        type: string
+      id:
+        type: string
+        description: >-
+          Account number, credit card number, Insurance contract number,
+          investment product ID number, etc.
+      type:
+        type: string
+        description: The type of product
+        example: Term Deposit
+      alias:
+        description: This is the user assigned alias for this product
+        type: string
+        example: Deposito Plazo Fijo *** 0056
+      description:
+        description: Description details for this product.
+        type: string
+        example: Deposito Plazo Fijo     
+      status:
+        description: The user understable status for the product.
+        type: string
+        enum:
+          - available
+          - closed
+          - blocked
+      balance:
+        type: object
+        description: The balance of this product
+        allOf:
+          - $ref: '#/definitions/Money'
+          - properties:
+              balance_type:
+                description: >-
+                  The type of balance which corresponds to the main balance. This is
+                  typically the total balance, unadjusted for pending transactions
+                type: string
+                example: Total Balance    
+  InvestmentProduct:
+    type: object
+    description: An investment product - Term Deposit account details
+    allOf:
+      - $ref: '#/definitions/Product'
+      - properties:
+          investment_type:
+            description: The type of investment product
+            type: string
+            example: Fixed Term Deposit
+          term:
+            description: The duration / term of the Term Deposit contract in days
+            type: number
+            example: 5
+          start_date:
+            description: The start date of the contract
+            type: string
+            format: date
+            example: '2017-06-30'
+          due_date:
+            description: Due date or maturity date of the investment product
+            type: string
+            format: date
+            example: '2017-07-30'
+          annual_interest_rate:
+            description: >-
+              The Annualized Interest Rate / APR of this contract as a decimal.
+              Support for up to 6 decimal places.
+            type: string
+            example: '1.010000'
+          effective_interest_rate:
+            description: >-
+              The effective interest rate earned in the period dictated by the
+              terms of the contract as a decimal value. Support for up to 6
+              decimal places.
+            type: string
+            example: '1.010000'
+          interest_at_maturity:
+            description: >-
+              The expected amount of interest to be paid or earned at the end of
+              the maturity period
+            $ref: '#/definitions/Money'
+          value_at_maturity:
+            description: >-
+              The value of this contract at the end of the maturity period. This
+              is the total amount inclusive of the original principal amount.
+              e.g. 200000 (Principal / Main_Balance) + 2000 (Interest at
+              Maturity) = 202000 (Value at Maturity)
+            $ref: '#/definitions/Money'
+          contract_custody:
+            description: >-
+              Identifies whether the custody of the contract is electronic or
+              physical
+            type: string
+            example: Electronic
+          funding_account_url:
+            description: >-
+              The funding account that is linked to the investment product
+              contract
+            type: string
+            example: accounts/e1298e0j2e09e3
+    required:
+      - investment_type
+      - term
+      - start_date
+      - due_date
+      - interest_at_maturity
+      - annual_interest_rate
+      - effective_interest_rate
+      - value_at_maturity
+      - contract_custody
+      - funding_account
+  Transactions:
+    description: An array of Investment Product transactions
+    type: object
+    properties:
+      transactions:
+        $ref: '#/definitions/Transactions_List'
+      last_cursor_key:
+        description: The last cursor key for the set of entries retrieved
+        type: string
+        example: 234234324
+  Transactions_List:
+    description: An array of Investment Product transactions
+    type: array
+    items:
+      $ref: '#/definitions/Transaction'   
+  Transaction:
+    description: Details of an Investment Product transaction
+    type: object
+    properties:
+      transaction_id:
+        description: Unique Transaction Identifier / Transaction Reference Number
+        type: string
+        example: '298348230932840'
+      description:
+        description: >-
+          Description identifying the specifics of the investment product
+          transaction / activity
+        type: string
+        example: >-
+          Action: Buy | Amount: 200000 | Currency: CLP | Investment Type: Fixed
+          Term Deposit | From Account: 23-23432-23 | To Account: 324-2345324
+      posted_datetime:
+        description: Transaction Posting Datetime
+        type: string
+        format: datetime
+        example: '2017-08-09T17:09:46Z'
+      execution_datetime:
+        description: Transaction Execution Datetime
+        type: string
+        format: datetime
+        example: '2017-08-09T17:09:46Z'
+      start_date:
+        description: The start date of the contract
+        type: string
+        format: date
+        example: '2017-06-30'
+      due_date:
+        description: Due date or maturity date of the investment product
+        type: string
+        format: date
+        example: '2017-07-30'
+      transaction_type:
+        description: The type of transaction
+        type: string
+        example: Investment
+      from_account_url:
+        description: The URL to the paying account
+        type: string
+        example: accounts/hewq098j32ee2
+      to_account_url:
+        description: The URL to the receiving account
+        type: string
+        example: accounts/ijdoiqw932es1
+      principal:
+        description: Principal amount of the investment product
+        $ref: '#/definitions/Money'
+      interest_at_maturity:
+        description: >-
+          The expected amount of interest to be paid or earned at the end of the
+          maturity period
+        $ref: '#/definitions/Money'
+      effective_interest_rate:
+        description: >-
+          The effective interest rate earned in the period dictated by the terms
+          of the contract as a decimal value.
+        type: string
+        example: '1.010000'
+      value_at_maturity:
+        description: >-
+          The value of this contract at the end of the maturity period. This is
+          the total amount inclusive of the original principal amount. e.g.
+          200000 (Principal) + 2000 (Interest at Maturity) = 202000 (Value at
+          Maturity)
+        $ref: '#/definitions/Money'
+    required:
+      - transaction_id
+      - description
+      - posted_datetime
+      - execution_datetime
+      - start_date
+      - due_date
+      - from_account_url
+      - to_account_url
+      - principal
+      - interest_at_maturity
+      - effective_interest_rate
+      - value_at_maturity
+  Money:
+    type: object
+    properties:
+      currency_code:
+        type: string
+        description: >-
+          [ISO 4217](https://www.iso.org/iso-4217-currency-codes.html) currency
+          code.
+      amount:
+        type: number
+  Error:
+    type: object
+    properties:
+      error:
+        type: string
+        example: Bad Request
+        description: Description of the status
+      exception:
+        type: string
+        example: com.bns.starter.exceptions.BadRequestException
+        description: Name of the internal exception
+      message:
+        type: string
+        example: Something is invalid
+        description: Description of the exception
+      path:
+        type: string
+        example: /testpath/testservice
+        description: Path of the problematic service call
+      status:
+        type: integer
+        format: int32
+        example: 400
+        description: HTTP status code
+      timestamp:
+        type: integer
+        format: int64
+        example: 1482253855188
+        description: Timestamp of the error
+        
+ 
+        
+  AcquireStart:
+    type: object
+    properties:
+      key: 
+        type: string
+        description: BaaS unique generated key for this operation.
+      status:
+        type: string
+        description: status of the current operation
+        example: "NEW"
+      products:
+        type: array
+        description: array with the conditions for the different investment products type
+        items:
+          $ref: '#/definitions/FixedTermDeposit'
+  
+  FixedTermDeposit:
+    type: object
+    properties:
+      from_account:
+          type: array
+          description: return an array of accounts that are allowed to buy a term deposit.
+          items:
+            type: string
+            example: "deposit_account_1, deposit_account_2"
+      investment_type: 
+        description: investments product type
+        type: string
+        example: "Fixed term deposit"
+      term:
+        type: object
+        description: return a range between the min and max days allowed for this operation 
+        properties:
+          min: 
+            type: string
+            example: 25
+          max:
+            type: string
+            example: 360
+      currency:
+        type: string
+        example: "CAD"
+      amount:
+        type: object
+        description: returns a range between the min and max amounts allowed for this operation
+        properties:
+          min:
+            $ref: '#/definitions/Money'
+          max:
+            $ref: '#/definitions/Money'
+      anual_interest:
+        type: string
+        example: "2.39%"
+      interest_rate:
+        type: string
+        example: "2.39%"
+  AcquireUpdate:
+    type: object
+    properties:
+      key: 
+        type: string
+        description: BaaS unique generated key for this operation.
+      from_account:
+          type: string
+          description: provides the account from which buying the investment product
+          example: "deposit_account_1"
+      investment_type: 
+        description: investments product type
+        type: string
+        example: "Fixed term deposit"
+      term:
+        type: string
+        example: 360
+      currency:
+        type: string
+        example: "CAD"
+      amount:
+        $ref: '#/definitions/Money'
+      anual_interest:
+        type: string
+        example: "2.39%"
+      interest_rate:
+        type: string
+        example: "2.39%"
+

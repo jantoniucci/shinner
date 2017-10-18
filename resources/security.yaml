@@ -1,0 +1,1170 @@
+swagger: '2.0'
+info:
+  description: passport-oauth description
+  version: passport-oauth version
+  title: passport-oauth title
+  termsOfService: passport-oauth URL
+  license:
+    name: passport-oauth license
+host: passport-ist.apps.stg.azr-cc-pcf.cloud.bns
+basePath: /
+tags:
+  - name: passport-controller
+    description: Passport Controller
+  - name: authorize-controller
+    description: Authorize Controller
+paths:
+  /oauth2/v1/authorize:
+    get:
+      tags:
+        - authorize-controller
+      summary: authorize
+      description: Redirects an authorize request
+      operationId: get authorize
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: response_type
+          in: query
+          description: response_type
+          required: true
+          type: string
+        - name: client_id
+          in: query
+          description: client_id
+          required: true
+          type: string
+        - name: redirect_uri
+          in: query
+          description: redirect_uri
+          required: false
+          type: string
+        - name: scope
+          in: query
+          description: scope
+          required: false
+          type: string
+        - name: state
+          in: query
+          description: state
+          required: false
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+        '302':
+          description: Redirected
+        '400':
+          description: Client Error
+        '500':
+          description: Unexpected Error
+    post:
+      tags:
+        - authorize-controller
+      summary: code
+      description: Return an authorization code
+      operationId: post authorize
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: authorizeRequest
+          description: authorizeRequest
+          required: true
+          schema:
+            $ref: '#/definitions/Request'
+      responses:
+        '200':
+          description: Return authorization code
+          schema:
+            type: object
+        '500':
+          description: Unexpected Error
+  /oauth2/v1/certs:
+    get:
+      tags:
+        - passport-controller
+      summary: certs
+      description: Retrieve JWKS for JWT verification
+      operationId: get jwks
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: JWKS
+          schema:
+            $ref: '#/definitions/JWKSet'
+  /oauth2/v1/token:
+    post:
+      tags:
+        - passport-controller
+      summary: token
+      operationId: tokenUsingPOST
+      consumes:
+        - application/x-www-form-urlencoded
+      produces:
+        - application/json
+      parameters:
+        - name: grant_type
+          in: formData
+          description: Grant Type
+          required: false
+          type: string
+        - name: code
+          in: formData
+          description: Code
+          required: false
+          type: string
+        - name: scope
+          in: formData
+          description: Scope
+          required: false
+          type: string
+        - name: username
+          in: formData
+          description: User Id
+          required: false
+          type: string
+        - name: password
+          in: formData
+          description: Password
+          required: false
+          type: string
+        - name: client_id
+          in: formData
+          description: Client ID
+          required: false
+          type: string
+        - name: assertion
+          in: formData
+          description: Assertion
+          required: false
+          type: string
+        - name: Authorization
+          in: header
+          description: Authorization
+          required: false
+          type: string
+      responses:
+        '200':
+          description: Return Client access token
+          schema:
+            $ref: '#/definitions/Response'
+        '400':
+          description: Client Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '500':
+          description: Server Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  '/oauth2/v1/token/{accessToken}':
+    delete:
+      tags:
+        - passport-controller
+      summary: remove
+      description: Remove AccessToken.
+      operationId: remove nickname
+      consumes:
+        - application/json
+      produces:
+        - application/text
+      parameters:
+        - name: accessToken
+          in: path
+          description: accessToken
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: string
+        '401':
+          description: Unauthorized
+        '500':
+          description: Unexpected Error
+  '/oauth2/v1/tokeninfo/{accessToken}':
+    get:
+      tags:
+        - passport-controller
+      summary: retrieve
+      operationId: retrieveUsingGET
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: accessToken
+          in: path
+          description: accessToken
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: string
+definitions:
+  Locale:
+    type: object
+  StandardAddressType:
+    type: object
+    properties:
+      additionalDeliveryInformation:
+        type: string
+      deliveryNumber1:
+        type: string
+      deliveryNumber2:
+        type: string
+      deliveryNumber3:
+        type: string
+      deliveryType1:
+        type: string
+      deliveryType2:
+        type: string
+      deliveryType3:
+        type: string
+      streetDirection:
+        type: string
+      streetName:
+        type: string
+      streetNumber:
+        type: string
+      sundryAddressInfo:
+        type: string
+      unitNumber:
+        type: string
+      unitType:
+        type: string
+  BirthDateType:
+    type: object
+    properties:
+      birthDateRefused:
+        type: boolean
+      dateOfBirth:
+        type: string
+  Base64:
+    type: object
+  KeyType:
+    type: object
+    properties:
+      requirement:
+        type: string
+        enum:
+          - REQUIRED
+          - RECOMMENDED
+          - OPTIONAL
+      value:
+        type: string
+  AdditionalCustInfoType:
+    type: object
+    properties:
+      age:
+        type: integer
+        format: int32
+      ineligibilityIndicatorMor:
+        type: string
+      ineligibilityIndicatorVisa:
+        type: string
+      staffIndicator:
+        type: string
+  AttributeParameterType:
+    type: object
+    properties:
+      name:
+        type: string
+      section:
+        type: string
+      value:
+        type: string
+  OrgContactType:
+    type: object
+    properties:
+      contactType:
+        type: string
+      desc:
+        type: string
+      emailAddr:
+        type: string
+      fax:
+        type: string
+      language:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      title:
+        type: string
+      url:
+        type: string
+  CustomerSystemInfo001:
+    type: object
+    properties:
+      infoId:
+        type: array
+        items:
+          $ref: '#/definitions/CustomerInfoId001'
+      sysId:
+        type: string
+  EmploymentType:
+    type: object
+    properties:
+      businessAddress:
+        type: string
+      businessEmployerAddress:
+        $ref: '#/definitions/AddressType'
+      businessPhone:
+        type: string
+      businessPhoneExt:
+        type: string
+      employerName:
+        type: string
+      employerPhone:
+        type: string
+      endDdate:
+        $ref: '#/definitions/Calendar'
+      grossMonthlyIncome:
+        type: number
+        format: double
+      income:
+        $ref: '#/definitions/CurAmtType'
+      jobTitle:
+        type: string
+      lengthOfEmployment:
+        $ref: '#/definitions/DurationType'
+      lengthOfOccupation:
+        $ref: '#/definitions/DurationType'
+      occupation:
+        type: string
+      occupationAction:
+        type: string
+      occupationCategory:
+        type: string
+      occupationCode:
+        type: string
+      occupationStatus:
+        type: string
+      occupationType:
+        type: string
+      startDate:
+        $ref: '#/definitions/Calendar'
+  URI:
+    type: object
+    properties:
+      absolute:
+        type: boolean
+      authority:
+        type: string
+      fragment:
+        type: string
+      host:
+        type: string
+      opaque:
+        type: boolean
+      path:
+        type: string
+      port:
+        type: integer
+        format: int32
+      query:
+        type: string
+      rawAuthority:
+        type: string
+      rawFragment:
+        type: string
+      rawPath:
+        type: string
+      rawQuery:
+        type: string
+      rawSchemeSpecificPart:
+        type: string
+      rawUserInfo:
+        type: string
+      scheme:
+        type: string
+      schemeSpecificPart:
+        type: string
+      userInfo:
+        type: string
+  Profile:
+    type: object
+    properties:
+      bid:
+        type: string
+      booleanEntls:
+        type: array
+        items:
+          type: integer
+          format: int32
+      brk:
+        type: boolean
+      cardEntlLimit:
+        type: object
+        additionalProperties:
+          type: number
+          format: double
+      cardType:
+        type: string
+      ci:
+        type: boolean
+      cid:
+        type: string
+      clientUserId:
+        type: string
+      customerDetails:
+        $ref: '#/definitions/CustomerType'
+      customerInfo:
+        $ref: '#/definitions/CustomerInfo001'
+      emtUserId:
+        type: string
+      entlRec:
+        type: object
+        additionalProperties:
+          type: string
+      isIdmUser:
+        type: boolean
+      isRcp3User:
+        type: boolean
+      locale:
+        type: string
+      plasticCardInfo:
+        $ref: '#/definitions/PlasticCardInfoType'
+      scotiaAdvisor:
+        type: array
+        items:
+          $ref: '#/definitions/ScotiaAdvisorType'
+      userId:
+        type: string
+  EntlRecType:
+    type: object
+    properties:
+      argType:
+        type: string
+      argValue:
+        type: string
+      desc:
+        type: string
+      entlId:
+        type: string
+      final:
+        type: boolean
+      source:
+        type: string
+  Base64URL:
+    type: object
+  CustRelationshipType:
+    type: object
+    properties:
+      customerTieBreaker:
+        type: integer
+        format: int64
+      nameKey:
+        type: string
+      relationship:
+        type: string
+      relationshipPercentageOwned:
+        type: string
+  ResidenceType:
+    type: object
+    properties:
+      address:
+        $ref: '#/definitions/AddressType'
+      emailAddr:
+        type: string
+      homePhoneNum:
+        type: string
+      paymentAmount:
+        type: number
+        format: double
+      paymentFrequency:
+        type: string
+      residenceStatus:
+        type: string
+      timeAtAddress:
+        $ref: '#/definitions/DurationType'
+  PlasticCardInfoType:
+    type: object
+    properties:
+      descFromDB:
+        type: boolean
+      featureInd:
+        type: string
+      flashEnabled:
+        type: string
+      longDescEn:
+        type: string
+      longDescFr:
+        type: string
+      plasticCardSubType:
+        type: string
+      plasticCardType:
+        type: string
+      shortDescEn:
+        type: string
+      shortDescFr:
+        type: string
+  PersonInfoType:
+    type: object
+    properties:
+      bankruptcyDate:
+        $ref: '#/definitions/Calendar'
+      birthDate:
+        $ref: '#/definitions/BirthDateType'
+      dateDeceased:
+        $ref: '#/definitions/Calendar'
+      emailAddress:
+        type: string
+      employment:
+        $ref: '#/definitions/EmploymentType'
+      employmentHistory:
+        type: array
+        items:
+          $ref: '#/definitions/EmploymentHistoryType'
+      fullName:
+        type: string
+      fullNameTie:
+        type: string
+      gender:
+        type: string
+      identifications:
+        type: array
+        items:
+          $ref: '#/definitions/IdentificationsType'
+      language:
+        type: string
+      maritalStatus:
+        type: string
+      numDependents:
+        type: integer
+        format: int64
+      personName:
+        $ref: '#/definitions/PersonNameType'
+      residence:
+        $ref: '#/definitions/ResidenceType'
+  IndustIdType:
+    type: object
+    properties:
+      industNum:
+        type: string
+      org:
+        type: string
+  JWKSet:
+    type: object
+    properties:
+      additionalMembers:
+        type: object
+      keys:
+        type: array
+        items:
+          $ref: '#/definitions/JWK'
+  CardEntlLimitType:
+    type: object
+    properties:
+      entlLimitAmount:
+        $ref: '#/definitions/CurAmtType'
+      entlLimitType:
+        type: string
+  PersonNameType:
+    type: object
+    properties:
+      firstName:
+        type: string
+      initials:
+        type: string
+      lastName:
+        type: string
+      middleName:
+        type: string
+      nameSuffix:
+        type: string
+      titlePrefix:
+        type: string
+  IdentificationsType:
+    type: object
+    properties:
+      customerIdStatus:
+        type: string
+      customerPresent:
+        type: boolean
+      establishedBy:
+        type: string
+      existingCustomerKnown:
+        type: boolean
+      guardianshipPaperFiled:
+        type: boolean
+      identification:
+        type: array
+        items:
+          $ref: '#/definitions/IdentificationType'
+      minorSigningAuthority:
+        type: boolean
+  JWK:
+    type: object
+    properties:
+      algorithm:
+        $ref: '#/definitions/Algorithm'
+      keyID:
+        type: string
+      keyOperations:
+        type: array
+        items:
+          type: string
+          enum:
+            - sign
+            - verify
+            - encrypt
+            - decrypt
+            - wrapKey
+            - unwrapKey
+            - deriveKey
+            - deriveBits
+      keyStore:
+        $ref: '#/definitions/KeyStore'
+      keyType:
+        $ref: '#/definitions/KeyType'
+      keyUse:
+        type: string
+        enum:
+          - sig
+          - enc
+      private:
+        type: boolean
+      requiredParams:
+        type: object
+        additionalProperties:
+          type: object
+      x509CertChain:
+        type: array
+        items:
+          $ref: '#/definitions/Base64'
+      x509CertSHA256Thumbprint:
+        $ref: '#/definitions/Base64URL'
+      x509CertThumbprint:
+        $ref: '#/definitions/Base64URL'
+      x509CertURL:
+        $ref: '#/definitions/URI'
+  DurationType:
+    type: object
+    properties:
+      days:
+        type: integer
+        format: int64
+      hours:
+        type: integer
+        format: int64
+      minutes:
+        type: integer
+        format: int64
+      months:
+        type: integer
+        format: int64
+      years:
+        type: integer
+        format: int64
+  CustomerInfo001:
+    type: object
+    properties:
+      cardNumber:
+        type: string
+      custId:
+        type: string
+      custSysInfo:
+        type: array
+        items:
+          $ref: '#/definitions/CustomerSystemInfo001'
+  CustomerInfoId001:
+    type: object
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+  NonPersonalEntityType:
+    type: object
+    properties:
+      accountHolders:
+        type: array
+        items:
+          $ref: '#/definitions/PersonNameType'
+      orgInfo:
+        $ref: '#/definitions/OrgInfoType'
+  CurAmtType:
+    type: object
+    properties:
+      amt:
+        type: number
+        format: double
+      currencyId:
+        type: string
+  Calendar:
+    type: object
+    properties:
+      fieldsComputed:
+        type: integer
+        format: int32
+      fieldsNormalized:
+        type: integer
+        format: int32
+      firstDayOfWeek:
+        type: integer
+        format: int32
+      lenient:
+        type: boolean
+      minimalDaysInFirstWeek:
+        type: integer
+        format: int32
+      time:
+        type: string
+        format: date-time
+      timeInMillis:
+        type: integer
+        format: int64
+      timeZone:
+        $ref: '#/definitions/TimeZone'
+      weekCountData:
+        $ref: '#/definitions/Locale'
+      zoneShared:
+        type: boolean
+  Request:
+    type: object
+    required:
+      - clientId
+      - grantType
+      - jwt
+      - password
+      - profile
+      - providerId
+      - responseType
+      - scope
+      - userId
+    properties:
+      clientId:
+        type: string
+        example: grantType
+      grantType:
+        type: string
+        example: grantType
+      scope:
+        type: string
+        example: standard
+      userId:
+        type: string
+        example: '4536007001125400'
+      password:
+        type: string
+        example: abc12345
+      responseType:
+        type: string
+        example: responseType
+      profile:
+        example: profile
+        $ref: '#/definitions/Profile'
+      jwt:
+        type: string
+        example: jwt
+      providerId:
+        type: string
+        example: providerId
+  OrgInfoType:
+    type: object
+    properties:
+      address:
+        $ref: '#/definitions/AddressType'
+      annualSales:
+        type: number
+        format: double
+      annualSalesAvailability:
+        type: string
+      annualSalesEffectiveDate:
+        type: object
+      bankruptcyDate:
+        $ref: '#/definitions/Calendar'
+      businessLegalName:
+        type: string
+      businessTradingName:
+        type: string
+      corporationCountryOfIssue:
+        type: string
+      corporationFlag:
+        type: string
+      corporationProvinceOfIssue:
+        type: string
+      corporationRegistrationNo:
+        type: string
+      creditAdminRating:
+        type: string
+      establishDt:
+        $ref: '#/definitions/Calendar'
+      industId:
+        $ref: '#/definitions/IndustIdType'
+      language:
+        type: string
+      legalName:
+        type: string
+      name:
+        type: string
+      numEmployees:
+        type: integer
+        format: int64
+      numberOfEmployeesAvailability:
+        type: string
+      orgContact:
+        $ref: '#/definitions/OrgContactType'
+      profitability:
+        type: string
+      standardIndustrialCode:
+        type: string
+      taxNumber:
+        type: string
+      tradeName:
+        type: string
+      tradeNameType:
+        type: string
+      typeOfBusiness:
+        type: string
+  CustAttributeType:
+    type: object
+    properties:
+      attributeParameters:
+        type: array
+        items:
+          $ref: '#/definitions/AttributeParameterType'
+  CustomerType:
+    type: object
+    properties:
+      access:
+        type: string
+      additionalInfo:
+        $ref: '#/definitions/AdditionalCustInfoType'
+      booleanEntls:
+        type: string
+      cardEntlLimit:
+        type: array
+        items:
+          $ref: '#/definitions/CardEntlLimitType'
+      cid:
+        type: integer
+        format: int64
+      custAttributes:
+        $ref: '#/definitions/CustAttributeType'
+      custRelationships:
+        type: array
+        items:
+          $ref: '#/definitions/CustRelationshipType'
+      custRemarks:
+        type: array
+        items:
+          $ref: '#/definitions/CustRemarkType'
+      customerDateClosed:
+        $ref: '#/definitions/Calendar'
+      customerRiskLevel:
+        type: string
+      customerService:
+        type: array
+        items:
+          $ref: '#/definitions/CustomerServiceType'
+      customerStatus:
+        type: string
+      customerTieBreaker:
+        type: integer
+        format: int64
+      dateOfFirstContact:
+        $ref: '#/definitions/Calendar'
+      domicleBranch:
+        type: string
+      entlRec:
+        type: array
+        items:
+          $ref: '#/definitions/EntlRecType'
+      lastMaintenanceDate:
+        $ref: '#/definitions/Calendar'
+      nameKey:
+        type: string
+      nonPersonalEntity:
+        $ref: '#/definitions/NonPersonalEntityType'
+      person:
+        $ref: '#/definitions/PersonInfoType'
+      relationshipPricingIndicator:
+        type: string
+      relationshipValueIndicator:
+        type: string
+      segment:
+        type: array
+        items:
+          $ref: '#/definitions/SegmentType'
+      solicationInstruction:
+        type: string
+      source:
+        type: string
+      vip:
+        type: string
+  EmploymentHistoryType:
+    type: object
+    properties:
+      employmentStatus:
+        type: string
+      endDt:
+        $ref: '#/definitions/Calendar'
+      grossMonthlyIncome:
+        type: number
+        format: double
+      income:
+        $ref: '#/definitions/CurAmtType'
+      jobTitle:
+        type: string
+      lengthOfEmployment:
+        $ref: '#/definitions/DurationType'
+      occupation:
+        type: string
+      occupationAction:
+        type: string
+      occupationCategory:
+        type: string
+      occupationCode:
+        type: string
+      orgInfo:
+        $ref: '#/definitions/OrgInfoType'
+      startDt:
+        $ref: '#/definitions/Calendar'
+  Algorithm:
+    type: object
+    properties:
+      name:
+        type: string
+      requirement:
+        type: string
+        enum:
+          - REQUIRED
+          - RECOMMENDED
+          - OPTIONAL
+  KeyStore:
+    type: object
+    properties:
+      provider:
+        type: object
+        additionalProperties:
+          type: object
+      type:
+        type: string
+  IdentificationType:
+    type: object
+    properties:
+      action:
+        type: string
+      confirmed:
+        type: boolean
+      countryOfIssue:
+        type: string
+      dateCaptured:
+        $ref: '#/definitions/Calendar'
+      description:
+        type: string
+      idNumber:
+        type: string
+      idType:
+        type: string
+      notExpired:
+        type: boolean
+      officerId:
+        type: string
+      provinceOfIssue:
+        type: string
+      refused:
+        type: boolean
+      transit:
+        type: string
+  ErrorResponse:
+    type: object
+    required:
+      - error
+    properties:
+      error:
+        type: string
+      error_description:
+        type: string
+      error_uri:
+        type: string
+  SegmentType:
+    type: object
+    properties:
+      segmentId:
+        type: string
+      segmentValue:
+        type: string
+  Response:
+    type: object
+    required:
+      - access_token
+      - expires_in
+      - token_type
+    properties:
+      access_token:
+        type: string
+      code:
+        type: string
+      expires_in:
+        type: integer
+        format: int64
+      refresh_token:
+        type: string
+      scope:
+        type: string
+      token_type:
+        type: string
+  TimeZone:
+    type: object
+    properties:
+      id:
+        type: string
+      rawOffset:
+        type: integer
+        format: int32
+  CustomerServiceType:
+    type: object
+    properties:
+      service:
+        type: string
+      sysId:
+        type: string
+  ResponseEntity:
+    type: object
+    properties:
+      body:
+        type: object
+      statusCode:
+        type: string
+        enum:
+          - '100'
+          - '101'
+          - '102'
+          - '103'
+          - '200'
+          - '201'
+          - '202'
+          - '203'
+          - '204'
+          - '205'
+          - '206'
+          - '207'
+          - '208'
+          - '226'
+          - '300'
+          - '301'
+          - '302'
+          - '303'
+          - '304'
+          - '305'
+          - '307'
+          - '308'
+          - '400'
+          - '401'
+          - '402'
+          - '403'
+          - '404'
+          - '405'
+          - '406'
+          - '407'
+          - '408'
+          - '409'
+          - '410'
+          - '411'
+          - '412'
+          - '413'
+          - '414'
+          - '415'
+          - '416'
+          - '417'
+          - '418'
+          - '419'
+          - '420'
+          - '421'
+          - '422'
+          - '423'
+          - '424'
+          - '426'
+          - '428'
+          - '429'
+          - '431'
+          - '451'
+          - '500'
+          - '501'
+          - '502'
+          - '503'
+          - '504'
+          - '505'
+          - '506'
+          - '507'
+          - '508'
+          - '509'
+          - '510'
+          - '511'
+      statusCodeValue:
+        type: integer
+        format: int32
+  ScotiaAdvisorType:
+    type: object
+    properties:
+      branchPhone:
+        type: string
+      customerProfileType:
+        type: string
+      personName:
+        $ref: '#/definitions/PersonNameType'
+      phone:
+        type: string
+      transit:
+        type: string
+  AddressType:
+    type: object
+    properties:
+      addrType:
+        type: string
+      city:
+        type: string
+      cityOrLine3:
+        type: string
+      country:
+        type: string
+      endDt:
+        $ref: '#/definitions/Calendar'
+      hasStandardAddress:
+        type: boolean
+      line1:
+        type: string
+      line2:
+        type: string
+      postalCode:
+        type: string
+      standardAddress:
+        $ref: '#/definitions/StandardAddressType'
+      startDt:
+        $ref: '#/definitions/Calendar'
+      stateProv:
+        type: string
+  CustRemarkType:
+    type: object
+    properties:
+      description:
+        type: string
+      effectiveDate:
+        $ref: '#/definitions/Calendar'
+      expiryDate:
+        $ref: '#/definitions/Calendar'
+      number:
+        type: string
+      permanentRemark:
+        type: boolean

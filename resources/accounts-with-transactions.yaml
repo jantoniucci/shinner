@@ -1,0 +1,646 @@
+swagger: '2.0'
+info:
+  description: Accounts
+  version: 0.0.1
+  title: Accounts Services
+  termsOfService: TBD
+  contact:
+    name: API Design Team
+    url: 'http://confluence.agile.bns/display/API/BaaS+API+Design+Home'
+  license:
+    name: Accounts
+basePath: /v0
+tags:
+  - name: accounts
+    description: Definition for the Accounts domain
+paths:
+  /accounts/:
+    get:
+      tags:
+        - accounts
+      summary: Get the list of accounts
+      description: |
+        Provide a collection of accounts associated with one customer.
+      operationId: accounts
+      produces:
+        - application/hal+json
+      parameters:
+        - name: authourization
+          in: header
+          description: the auth
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Return Account details
+          schema:
+            $ref: '#/definitions/Accounts'
+        '204':
+          description: No content
+          schema:
+            $ref: '#definitions/204'
+        '400':
+          description: >-
+            Indicates that the server could not understand the request. This is
+            not the same as 422 which indicates a validation error
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: >-
+            Unauthorized.  This will be returned when no authentication
+            information is provided.
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: >-
+            The principal associated with the request does not have sufficent
+            rights to preform this operation on the requested resource.
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: The requested resource was not found.
+          schema:
+            $ref: '#/definitions/Error'
+        '422':
+          description: >-
+            The request was syntactically correct but was not symatcially
+            correct. Useally indicating a validation problem.
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Error'
+  '/accounts/{account-key}':
+    get:
+      tags:
+        - account-services
+      summary: Get an Account
+      description: >
+        Provide Account details for the Account specified by the BaaS Account
+        key. This resource will provide details for Accounts of all Products.
+        The exact payload of the Account resource will vary based on which
+        Product is associated with this Account. The BaaS Account Key is a
+        synthetic, opaque key which uniquely identifies an account across all
+        Products and backends.  This key will be provided by the
+        /customers/{id}/rels/accounts resource. The Key cannot be created
+        manually, and will only work with this version of the Accounts API.
+      operationId: account
+      produces:
+        - application/hal+json
+      parameters:
+        - name: account-key
+          in: path
+          description: BaaS Account Key.  This Key uniquely identifies this Account.
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Return Account details
+          schema:
+            $ref: '#/definitions/Account'
+        '204':
+          description: No content
+          schema:
+            $ref: '#definitions/204'
+        '400':
+          description: >-
+            Indicates that the server could not understand the request. This is
+            not the same as 422 which indicates a validation error
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: >-
+            Unauthorized.  This will be returned when no authentication
+            information is provided.
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: >-
+            The principal associated with the request does not have sufficent
+            rights to preform this operation on the requested resource.
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: The requested resource was not found.
+          schema:
+            $ref: '#/definitions/Error'
+        '422':
+          description: >-
+            The request was syntactically correct but was not symatcially
+            correct. Useally indicating a validation problem.
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Error'
+  '/accounts/{account-key}/transactions':
+    get:
+      tags:
+        - account-services
+      summary: Get the list of transactions
+      parameters:
+        - name: account-key
+          in: path
+          description: BaaS Account Key.  This Key uniquely identifies this Account.
+          required: true
+          type: string
+      description: |
+        Provide an array of all transactions associated with an account.
+      operationId: transactions
+      produces:
+        - application/hal+json
+      responses:
+        '200':
+          description: Return Transactions
+          schema:
+            $ref: '#/definitions/Transactions'
+        '204':
+          description: No content
+          schema:
+            $ref: '#definitions/204'
+        '400':
+          description: >-
+            Indicates that the server could not understand the request. This is
+            not the same as 422 which indicates a validation error
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: >-
+            Unauthorized.  This will be returned when no authentication
+            information is provided.
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: >-
+            The principal associated with the request does not have sufficent
+            rights to preform this operation on the requested resource.
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: The requested resource was not found.
+          schema:
+            $ref: '#/definitions/Error'
+        '422':
+          description: >-
+            The request was syntactically correct but was not symatcially
+            correct. Useally indicating a validation problem.
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Error'
+  '/account/{account-type}/{account-key}':
+    get:
+      tags:
+        - account-type
+      summary: Get a schema for an specific account type
+      description: >
+        Provide Account details for the Account specified by the BaaS Account
+        Key. This resource will provide details for Accounts of all Products.
+        The exact payload of the Account resource will vary based
+          on which Product is associated with this Account.
+          The BaaS Account Key is a synthetic, opaque key which uniquely identifies an account across all Products and backends.  This key will be provided by the /customers/{id}/rels/accounts resource.
+          The Key cannot be created manually, and will only work with this version of the Accounts API.
+      operationId: account-type
+      produces:
+        - application/hal+json
+      parameters:
+        - name: account-type
+          in: path
+          description: BaaS Account type
+          required: true
+          type: string
+        - name: account-key
+          in: path
+          description: BaaS Account Key.  This Key uniquely identifies this Account.
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Return Account details
+          schema:
+            $ref: '#/definitions/CreditAccountFields'
+        '204':
+          description: No content
+          schema:
+            $ref: '#definitions/204'
+        '400':
+          description: >-
+            Indicates that the server could not understand the request. This is
+            not the same as 422 which indicates a validation error
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: >-
+            Unauthorized.  This will be returned when no authentication
+            information is provided.
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: >-
+            The principal associated with the request does not have sufficent
+            rights to preform this operation on the requested resource.
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: The requested resource was not found.
+          schema:
+            $ref: '#/definitions/Error'
+        '422':
+          description: >-
+            The request was syntactically correct but was not symatcially
+            correct. Useally indicating a validation problem.
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  '204':
+    type: string
+    description: no content
+  Currency:
+    type: string
+    description: Currency codes adhere to ISO 4217
+    enum:
+      - CAD
+      - USD
+  Money:
+    type: object
+    properties:
+      currency_code:
+        type: string
+        description: >-
+          [ISO 4217](https://www.iso.org/iso-4217-currency-codes.html) currency
+          code.
+      amount:
+        type: string
+        format: decimal
+  AccountDate:
+    properties:
+      type:
+        type: string
+        enum:
+          - opened
+          - closed
+      date:
+        type: string
+        format: date-time
+        example: '2007-09-31T12:00:00+05:00'
+  Accounts:
+    type: array
+    description: An array of accounts
+    items:
+      $ref: '#definitions/AccountList'
+  AccountList:
+    type: object
+    properties:
+      account-key:
+        type: string
+        description: the BaaS key of the account
+        example: '12345567'
+      account-url:
+        description: the link to the resource
+        type: string
+        example: 'accounts/{account-key}'
+  Account:
+    type: object
+    description: >-
+      Account details resource. Contains information about an account with
+      Scotiabank, including location and ownership information.
+    properties:
+      account_key:
+        description: BaaS Account Key.  This Key uniquely identifies this Account.
+        type: string
+      account_number:
+        type: string
+        description: Account number
+      transit_id:
+        description: Transit number of the account servicing branch.
+        type: string
+        example: 52084-002
+      status:
+        description: >-
+          Status of account. The set of possible values depends on the product
+          type
+        type: string
+        enum:
+          - opened
+          - closed
+          - blocked
+      balances:
+        $ref: '#/definitions/Balance'
+      account_type:
+        description: The type of banking product.
+        type: object
+        properties:
+          product:
+            description: This is the product
+            type: string
+          subproduct:
+            description: This is the subproduct
+            type: string
+          name:
+            type: string
+            enum:
+              - creditAccount
+              - checked
+              - savings
+          details:
+            type: object
+            properties:
+              product_key:
+                type: string
+                example: 123456789
+              url:
+                type: string
+                example: '/accounts/v0/credit-account/{product-key}'
+      transactions:
+        type: array
+        items:
+          $ref: '#/definitions/Transaction'
+      dates:
+        type: array
+        items:
+          $ref: '#definitions/AccountDate'
+      customers:
+        type: array
+        items:
+          $ref: '#definitions/Customer'
+      _links:
+        $ref: '#/definitions/AccountDetailsLinks'
+  Balance:
+    description: >-
+      The balance is used to express an account balance. The balance being
+      specified is identified in BalanceType, which is an Open Enum. When
+      Balanace is used, it may repeat, to allow multiple balances to be
+      specified for the given account.
+    type: object
+    properties:
+      EffectiveDate:
+        description: The Date/time associated to the action result
+        type: string
+        format: date-time
+      Balance:
+        $ref: '#/definitions/BalanceMap'
+  BalanceMap:
+    properties:
+      key:
+        description: This is the balance type
+        type: string
+        enum:
+          - currentBalance
+          - pendingBalance
+          - totalBalance
+      value:
+        $ref: '#/definitions/Money'
+  Customer:
+    type: object
+    description: entity to define customer
+    properties:
+      customer_key:
+        type: string
+        description: 'baas customer key, this key uniquely indentify this customer'
+        example: 123456789
+      href:
+        type: string
+        description: URI to link resources
+        example: '/customers/{customer-key}'
+  CreditAccountFields:
+    type: object
+    description: These fields exist only in the context of a Credit Card account
+    properties:
+      principal:
+        description: Principal amount of the deposit
+        type: string
+        example: '50'
+      term:
+        description: Term of the deposit in days
+        type: string
+        example: '30'
+      start_date:
+        description: Starting date of the deposit
+        type: string
+        format: date
+        example: 30/12/2016
+      due_date:
+        description: End date of the deposit
+        type: string
+        format: date
+        example: 30/01/2017
+      interest_paid:
+        description: Amount of interest to be paid
+        type: string
+        example: '0.562'
+      annual_interest_rate:
+        description: Annual interest rate
+        type: string
+        example: 4.41%
+      mature_value:
+        description: Value at maturity
+        type: string
+        example: '50.562'
+      account_pay_mature:
+        description: Account to receive payment on maturity
+        type: string
+        example: 71-69494-06
+      customer_managment:
+        description: Electronic custody
+        type: string
+        example: Si
+      effective_interest:
+        description: Effective interest
+        type: string
+        example: '1.12'
+  AccountDetailsLinks:
+    type: object
+    description: >-
+      Links to related resources.  This includes a link to this Resource, the
+      Balances for this Account, and links to Customers with ownership/involved
+      party relationships with this account.  Note that not all relationship
+      types will be available on all account products.
+    properties:
+      self:
+        $ref: '#/definitions/AccountParameterizedLink'
+  AccountParameterizedLink:
+    type: object
+    description: >-
+      A link to another resource.  Includes both the HREF and BaaS Account Key
+      parameterizing the HREF.
+    properties:
+      key:
+        type: string
+        description: BaaS Account Key.  This Key uniquely identifies this Account.
+      href:
+        type: string
+        description: URI to linked Resource
+  Transactions:
+    type: object
+    properties:
+      Transactions:
+        $ref: '#/definitions/Transaction'
+      Links:
+        $ref: '#/definitions/PaginationLinks'
+  Transaction:
+    description: One transaction object
+    type: array
+    items:
+      $ref: '#/definitions/TransactionMap'
+  TransactionMap:
+    properties:
+      transactionID:
+        type: string
+        description: Unique transaction identifier
+        example: 298348230932840
+      postedDate:
+        type: string
+        format: date
+        description: Transaction Posting Date
+        example: '2010-02-19-05:00'
+      originalDate:
+        type: string
+        format: date
+        description: Original Transaction Date
+        example: '2010-02-19-05:00'
+      description:
+        type: string
+        description: Detailed transaction description
+        example: |
+          Service Charge
+          MONTHLY FEES
+      merchantName:
+        type: string
+        description: The name of the merchant
+        example: ABC
+      transaction_type:
+        description: This is the transaction type
+        type: string
+        enum:
+          - Term deposit
+          - tupe1
+          - type2
+  FixedTermDepositFields:
+    type: object
+    description: These fields exist only in the context of a Term Deposity transaction
+    properties:
+      principal:
+        description: Principal amount of the deposit
+        type: string
+        example: '50'
+      term:
+        description: Term of the deposit in days
+        type: string
+        example: '30'
+      startDate:
+        description: Starting date of the deposit
+        type: string
+        format: date
+        example: 30/12/2016
+      dueDate:
+        description: End date of the deposit
+        type: string
+        format: date
+        example: 30/01/2017
+      interestPaid:
+        description: Amount of interest to be paid
+        type: string
+        example: '0.562'
+      annualInterestRate:
+        description: Annual interest rate
+        type: string
+        example: 4.41%
+      matureValue:
+        description: Value at maturity
+        type: string
+        example: '50.562'
+      accountPayMature:
+        description: Account to receive payment on maturity
+        type: string
+        example: 71-69494-06
+      customerManagment:
+        description: Electronic custody
+        type: string
+        example: Si
+      effectiveInterest:
+        description: Effective interest
+        type: string
+        example: '1.12'
+    required:
+      - principal
+      - term
+      - startDate
+      - dueDate
+      - interestPaid
+      - annualInterestRate
+      - matureValue
+      - accountPayMature
+      - customerManagment
+      - effectiveInterest
+  PaginationLinks:
+    type: object
+    description: Links to current and next transaction page
+    properties:
+      self:
+        type: string
+        description: URL to current page
+        example: '/accounts/{account-key}/transactions?page=<query string>'
+      next:
+        type: string
+        description: URL to the next page
+        example: '/accounts/{account-key}/transactions?page=<next query string>'
+      previous:
+        type: string
+        description: URL to the next page
+        example: '/accounts/{account-key}/transactions?page=<previous query string>'
+  Error:
+    type: object
+    description: Other properties may be returned which are not listed here.
+    properties:
+      id:
+        type: string
+        example: 85ca3108-8e11-4ad2-b174-1fc3e5dbef1b
+        description: >
+          Unique identifier for this specific error instance.  When a fault is
+          encountered in the BaaS service layer,
+
+          a UUID will be generated for this specific fault, and returned to the
+          client.  It will also be logged to the BaaS log file.  This
+
+          will enable easier log file correlation and debugging.
+      code:
+        type: string
+        example: 001-001-0001
+        description: >
+          Numeric error code.  The format of this error number should be
+          standardized across all BaaS Services, to clearly indicate the service
+          which has suffered the error, and the cause of this error.
+
+          Proposed schema  [001-001-0001] [Service Id - Error Category - Error
+          Number]
+      message:
+        type: string
+        example: Country Code is invalid
+        description: Description of the exception
+      path:
+        type: string
+        example: /v0/customers
+        description: Path of the problematic service call
+      timestamp:
+        type: integer
+        format: int64
+        example: 1482253855188
+        description: Timestamp of the error
+      request_id:
+        type: string
+        example: 11235f
+        description: >-
+          Global request id of failed request.  Every request which enters the
+          BaaS platform from the API gateway will have a
+    required:
+      - code
+      - message
+      - request_id

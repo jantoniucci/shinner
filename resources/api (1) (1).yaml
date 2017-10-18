@@ -1,0 +1,526 @@
+swagger: '2.0'
+info:
+  title: Scotibank BaaS - Security Service
+  description: This domain include services to apply security to BaaS operations.
+  version: "0.0.1"
+basePath: /v0/
+tags:
+  - name: Authentications
+    description: Authentications to be applied to an operation
+paths:
+  '/security/authentications/':
+    post:
+      tags:
+      - Authentications
+      summary: creates a new authentications for an operation
+      description: Save a new authentications
+      operationId: save_authentications
+      produces:
+      - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: the auth token
+          required: true
+          type: string
+        - name: request_body
+          in: body
+          description: Body of authentications
+          required: true
+          schema:
+            type: object
+            properties:
+              operation_url: 
+                type: string
+                description: URL for the operation in progress
+                example: "/accounts/wire-transfer/123455"
+      responses:
+        200:
+          description: return the new signature
+          schema:
+            $ref: '#/definitions/OperationSignature'
+        400:
+          description: Indicates that the server could not understand the request. This is not the same as 422 which indicates a validation error
+          schema:
+            $ref: '#/definitions/Error'
+        401:
+          description: Unauthorized.  This will be returned when no authentication information is provided.
+          schema:
+            $ref: '#/definitions/Error'
+        403:
+          description: The principal associated with the request does not have sufficient rights to preform this operation on the requested resource.
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: The requested resource was not found.
+          schema:
+            $ref: '#/definitions/Error'
+        422:
+          description: The request was syntactically correct but was not semantically correct. Useally indicating a validation problem.
+          schema:
+            $ref: '#/definitions/Error'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Error'  
+    get:
+      tags:
+      - Authentications
+      summary: Get signatures  
+      description: Get signatures
+      operationId: get_signatures  
+      produces:
+      - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: the auth token
+          required: true
+          type: string
+        - name: status
+          in: query
+          type: string
+          description: filter by status
+          required: false
+        - name: signature_key
+          in: query
+          type: string
+          description: filter by signature_key
+          required: false
+      responses:
+        200:
+          description: return array of signatures
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/OperationSignature'
+        400:
+          description: Indicates that the server could not understand the request. This is not the same as 422 which indicates a validation error
+          schema:
+            $ref: '#/definitions/Error'
+        401:
+          description: Unauthorized.  This will be returned when no authentication information is provided.
+          schema:
+            $ref: '#/definitions/Error'
+        403:
+          description: The principal associated with the request does not have sufficient rights to preform this operation on the requested resource.
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: The requested resource was not found.
+          schema:
+            $ref: '#/definitions/Error'
+        422:
+          description: The request was syntactically correct but was not semantically correct. Useally indicating a validation problem.
+          schema:
+            $ref: '#/definitions/Error'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Error'
+  '/security/authentications/{authentication-key}/signers/{sign-index}/signatures':
+    post:
+      tags:
+      - Authentications
+      summary: Update an ongoing signing operation
+      description: Update an ongoing signing
+      operationId: put_signature     
+      produces:
+      - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: the auth token 
+          required: true
+          type: string
+        - name: authentication-key
+          in: path
+          description: id for the current operation
+          required: true
+          type: string
+        - name: sign-index
+          in: path
+          description: Index in the signs array
+          required: true
+          type: string
+        - name: request_body
+          in: body
+          description: Body of authentication
+          required: true
+          schema:
+            properties:
+              signature:
+                type: string
+                example: "{ sign_method: OTP, value: 'GH5T', ... }"
+                description: available authentication methods for the current user, like OTP, password, fingerprint, ect
+      responses:
+        200:
+          description: return the status of the authentication after update
+          schema:
+            properties:
+              subject:
+                type: string
+                description: Unique identifier for an user (e.g. Scotiacard number for Canada)
+                example: "1234567890"
+
+        203:
+          description:  Indicates that an extra authentication is required
+          schema:
+            $ref: '#/definitions/OperationSignature'
+        400:
+          description: Indicates that the server could not understand the request. This is not the same as 422 which indicates a validation error
+          schema:
+            $ref: '#/definitions/Error'
+        401:
+          description: Unauthorized.  This will be returned when no authentication information is provided.
+          schema:
+            $ref: '#/definitions/Error'
+        403:
+          description: The principal associated with the request does not have sufficient rights to preform this operation on the requested resource.
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: The requested resource was not found.
+          schema:
+            $ref: '#/definitions/Error'
+        422:
+          description: The request was syntactically correct but was not semantically correct. Useally indicating a validation problem.
+          schema:
+            $ref: '#/definitions/Error'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Error'    
+  '/secutiry/authenticators':
+    post:
+      tags:
+      - Authenticators
+      summary: Save a new sign method
+      description: Save a new sign method
+      operationId: save_sign
+      produces:
+      - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: the auth token
+          required: true
+          type: string
+        - name: request_body
+          in: body
+          description: Body of new sign
+          required: true
+          schema:
+            allOf:
+              - $ref: '#/definitions/SignatureDevice'
+              - properties:
+                  device_name: 
+                    type: string
+                    description: Human readable name for this device
+                    example: "IPhone 7"
+                    
+      responses:
+        200:
+          description: returns the new signature device
+          schema:
+            $ref: "#/definitions/AuthenticatorsResponse"
+            
+        400:
+          description: Indicates that the server could not understand the request. This is not the same as 422 which indicates a validation error
+          schema:
+            $ref: '#/definitions/Error'
+        401:
+          description: Unauthorized.  This will be returned when no authentication information is provided.
+          schema:
+            $ref: '#/definitions/Error'
+        403:
+          description: The principal associated with the request does not have sufficient rights to preform this operation on the requested resource.
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: The requested resource was not found.
+          schema:
+            $ref: '#/definitions/Error'
+        422:
+          description: The request was syntactically correct but was not semantically correct. Useally indicating a validation problem.
+          schema:
+            $ref: '#/definitions/Error'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Error'  
+    get:
+      tags:
+      - Authenticators
+      summary: Get sign methods availables  
+      description: Get sign method
+      operationId: get_signs
+      produces:
+      - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: the auth token
+          required: true
+          type: string
+      responses:
+        200:
+          description: return array of signatures
+          schema:
+            type: array
+            items:
+              allOf:
+              - properties:
+                  key:
+                    type: string
+                    example: "1234343"
+                    description: unique code usually provided by the device vendor
+                  id:
+                    type: string
+                    example: "1234343"
+                    description: BaaS unique code usually provided
+                  device_name: 
+                    type: string
+                    description: Human readable name for this device
+                    example: "IPhone 7"
+              - $ref: '#/definitions/SignatureDevice'
+
+        400:
+          description: Indicates that the server could not understand the request. This is not the same as 422 which indicates a validation error
+          schema:
+            $ref: '#/definitions/Error'
+        401:
+          description: Unauthorized.  This will be returned when no authentication information is provided.
+          schema:
+            $ref: '#/definitions/Error'
+        403:
+          description: The principal associated with the request does not have sufficient rights to preform this operation on the requested resource.
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: The requested resource was not found.
+          schema:
+            $ref: '#/definitions/Error'
+        422:
+          description: The request was syntactically correct but was not semantically correct. Useally indicating a validation problem.
+          schema:
+            $ref: '#/definitions/Error'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Error'
+  '/security/authenticators/{key}':
+    delete:
+      tags:
+      - Authenticators
+      summary: Delete a sign method
+      description: delete sign method
+      operationId: delete_signs
+      produces:
+      - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          description: the auth token
+          required: true
+          type: string
+        - name: key
+          in: path
+          type: string
+          description: BaaS unique identifier
+          required: true
+      responses:
+        200: 
+          description: Success. Successfully deleted 
+        401:
+          description: Unauthorized.  This will be returned when no authentication information is provided.
+          schema:
+            $ref: '#/definitions/Error'
+        403:
+          description: The principal associated with the request does not have sufficient rights to preform this operation on the requested resource.
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: The requested resource was not found.
+          schema:
+            $ref: '#/definitions/Error'
+        422:
+          description: The request was syntactically correct but was not semantically correct. Useally indicating a validation problem.
+          schema:
+            $ref: '#/definitions/Error'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  OperationSignature:
+    type: object
+    properties:
+      key: 
+        type: string
+        description: unique key generated by BaaS for this operation signature
+        example: "123455"
+      operation_url: 
+        type: string
+        description: URL for the operation in progress
+        example: "/accounts/wire-transfer/123455"
+      operation_channel: 
+        type: string 
+        description: Channel that initiates the operation
+        example: "MOBILE"
+      status:
+        type: string
+        description: "status of the authorization flow"
+        example: 'NEW'
+      expiration_date:
+        type: string
+        format: datetime
+        description: "Expiration date for the signature in ISO 8601 full-format"
+        example: '2017-12-31T23:59:59'
+      signers:
+        type: array
+        items:
+          $ref: '#/definitions/Signer'
+  Signer:
+    type: object
+    required:
+      - sign_method
+      - sign_status
+      - sign_weight
+    properties:
+      sign_method:
+        type: string
+        example: "1"
+        description: available sign methods for the current user, like OTP, password, fingerprint, ect
+      sign_status:
+        type: string
+        example: PENDING, OK, NOK, LOCKED
+        description: Status of validation in operation
+      sign_weight:
+        type: integer
+        example: 50 
+        description: percentage of sign to complete the authorization of operation
+      signatures:
+        type: array
+        items:
+          $ref: '#/definitions/Signature'
+      user_url:
+        type: string
+        example: "/users/1234567"
+        description: Status of validation in operation
+      signant_type:
+        type: string
+        example: "REQUIRED"
+        description: Defines the required or optional level for this sign
+  Signature:
+    type: object
+    properties:
+      signature:
+        type: string
+        example: "{ sign_method: OTP, value: '', ... }"
+        description: available sign methods for the current user, like OTP, password, fingerprint, ect
+      status:
+        type: string
+        example: "OK"
+        description: One of the following status OK, KO, PENDING, RETRY
+      signature_date:
+        type: string
+        format: datetime
+        description: "Signature date"
+        example: '2017-12-31T23:59:59'
+      sign_weight:
+        type: integer
+        example: 50 
+        description: percentage of sign to complete the authorization of operation
+
+  AuthenticatorsResponse:
+    type: object
+    properties:
+      key:
+        type: string
+        example: "1234343"
+        description: unique code usually provided by the device vendor
+      id:
+        type: string
+        example: "1234343"
+        description: BaaS unique code usually provided
+      
+  SignatureDevice:
+    type: object
+    description: entity for signature devices like Token Device, Finger Print, OTP, etc
+    properties:
+        device_id:
+          type: string
+          description: Id for the device
+          example: "12345"
+        value:
+          type: string
+          example: "jhgfdsdfghl"
+          description: the actual value for the authenticator
+        type:
+          type: string
+          example: "T1"
+          description: device type code ( T1 - something you know , T2 something you have, T3 something you are)
+        sub_type:
+          type: string
+          example: "TOKEN"
+          description: device type. 
+
+  Password:
+    type: object
+    description: entity to register passwords for the current user
+    properties:
+        key:
+          type: string
+          example: "1234567890"
+          description: unique code usually provided by the BaaS
+        password_type:
+          type: string
+          example: "OPERATION_PASSWORD"
+          description: Password type for OPERATION_PASSWORD or ACCESS_PASSWORD
+        password:
+          type: string
+          example: "CANDY2192"
+          description: password value
+        active:
+          type: boolean
+          example: true
+          description: password value
+
+  Error:
+    type: object
+    description: Other properties may be returned which are not listed here.
+    properties:
+      id:
+        type: string
+        example: 85ca3108-8e11-4ad2-b174-1fc3e5dbef1b
+        description: |
+          Unique identifier for this specific error instance.  When a fault is encountered in the BaaS service layer,
+          a UUID will be generated for this specific fault, and returned to the client.  It will also be logged to the BaaS log file.  This will enable easier log file correlation and debugging.
+      code:
+        type: string
+        example: 001-001-0001
+        description: |
+            Numeric error code.  The format of this error number should be standardized across all BaaS Services, to clearly indicate the service which has suffered the error, and the cause of this error.
+            Proposed schema  [001-001-0001] [Service Id - Error Category - Error Number]
+      message:
+        type: string
+        example: User or Password Invalid
+        description: Description of the exception
+      path:
+        type: string
+        example: /CL/v1/customerWebSiteLogin
+        description: Path of the problematic service call
+      timestamp:
+        type: integer
+        format: int64
+        example: 1482253855188
+        description: Timestamp of the error
+      requestId:
+        type: string
+        example: 11235f
+        description: Global request id of failed request.  Every request which enters the BaaS platform from the API gateway will have a
+    required:
+      - code
+      - message
+      - requestId

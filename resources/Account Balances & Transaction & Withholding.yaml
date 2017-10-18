@@ -1,0 +1,649 @@
+swagger: "2.0"
+info:
+  x-ibm-name: account-balances-transaction-withholding
+  title: Account Balances & Transaction & Withholding
+  version: 1.0.0
+  x-santander-atlas-id: 50056256_APIACCBALHOLTRX_V01R00
+  x-santander-atlas-description: AT prueba
+  x-santander-api-status: SANDBOX_REAL
+  description: |-
+    This API supports the lifecycle of Current or Savings account contracts. It provides key  functionalities around the following subjects:
+
+    Balances and Transactions Queries
+  contact:
+    email: alcarras@isban.com
+    name: Alfredo Carrasco Cuenca
+schemes:
+- https
+basePath: /santander-usa/intranet-client-cer/accounts
+consumes:
+- application/json
+produces:
+- application/json
+securityDefinitions:
+  clientIdHeader:
+    type: apiKey
+    in: header
+    name: X-IBM-Client-Id
+security:
+- clientIdHeader: []
+x-ibm-configuration:
+  testable: true
+  enforced: true
+  phase: realized
+paths:
+  /{account_id}/transactions/{transaction_id}:
+    get:
+      responses:
+        200:
+          description: 200 OK
+          schema:
+            $ref: '#/definitions/returnTransacionDetails'
+        204:
+          description: No Content
+          schema:
+            type: string
+        400:
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/GeneralError'
+        401:
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/GeneralError'
+        403:
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/GeneralError'
+        404:
+          description: Not Found
+          schema:
+            $ref: '#/definitions/GeneralError'
+        500:
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/GeneralError'
+      parameters:
+      - name: account_id
+        type: string
+        required: true
+        in: path
+        description: Number Account Identification
+      - name: transaction_id
+        type: string
+        required: true
+        in: path
+        description: internal transaction reference to identification
+      - name: X-Santander-Global-Id
+        type: string
+        required: false
+        in: header
+        description: Traceability E2E Header
+      - name: Device
+        type: string
+        required: false
+        in: header
+        description: 'Device information header:<br>   web: Default Value if no value
+          is specified <br>   mobile: If you are using this API from a Smartphone
+          <br>   tablet: Use this value if you are using this API from a tablet or
+          similar device <br>   watch: Use this value if you are using the API from
+          a smartwatch <br>                  Please note that not all the APIs are
+          able to accommodate the info to a specific device’s format needs. We will
+          highlight those fields which are sensitive to this parameter.'
+      - name: Authorization
+        type: string
+        required: true
+        in: header
+        description: Authorization Security Header. Example:<br> Bearer 923ioh89r23ohwedh823_ohdn9hite89yyugfsdf
+      - name: Accept-Language
+        type: string
+        required: false
+        in: header
+        description: 'Language Code (2 alphanumeric positions according to ISO 639_1)
+          + Country_Code (2 alphanumeric positions according to ISO 3166_1). Example:
+          en-US'
+      - name: account_id_type
+        type: string
+        required: true
+        in: query
+        description: 'Type off account id:  <br><br> INT: Internal Platform Number
+          <br> EEEEBBBBPPPAAAAAAA <br> E – Entity ID &#47; B – Branch ID &#47;P –
+          Product Type &#47; A – Account Number <br> <br> ABA: ABA format <br> RRRRRRRRRAAAAAAAAAAAAAAAAA
+          <br> RRRRRRRRR: Routing Number – Reference: https:&#47;&#47;en.wikipedia.org&#47;wiki&#47;Routing_transit_number#Routing_number_format
+          <br> AAAAAAAAAAAAAAAAA: Account Number (it can be less than 17 positions)
+          <br> <br> LSP: Local Spain <br> EEEEBBBBCCAAAAAAAAAA <br> E – Entity ID
+          &#47; B – Branch ID &#47; C – Control Digit &#47;A – Account Number <br>
+          <br> IBA: IBAN code. Reference: https:&#47;&#47;es.wikipedia.org&#47;wiki&#47;International_Bank_Account_Number
+          <br> <br> LUK: Local UK <br> <br> LGE: Local Germany format <br> <br> LPT:
+          Local Portugal Number <br> <br>'
+      - name: ApimForceCatalogSecurity
+        type: string
+        required: false
+        in: header
+        description: ApimForceCatalogSecurity
+      summary: Retrieve the detail an transaction of account
+      description: "Get detail of account transaction \nIn order to perform this operation
+        it is neccesary to provide a savings or current account number (several formats
+        are allowed) and  transaction reference identificaction should be provided
+        as input."
+  /{account_id}/transactions:
+    get:
+      responses:
+        200:
+          description: 200 OK
+          schema:
+            $ref: '#/definitions/returnTransactions'
+        204:
+          description: No Content
+          schema:
+            type: string
+        400:
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/GeneralError'
+        401:
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/GeneralError'
+        403:
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/GeneralError'
+        404:
+          description: Not Found
+          schema:
+            $ref: '#/definitions/GeneralError'
+        500:
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/GeneralError'
+      parameters:
+      - name: account_id
+        type: string
+        required: true
+        in: path
+        description: Number Account Identification
+      - name: from_date
+        type: string
+        required: false
+        in: query
+        description: intial date for the period  (YYYYMMDD format)
+      - name: to_date
+        type: string
+        required: false
+        in: query
+        description: end date for the period  (YYYYMMDD format)
+      - name: transaction_type
+        type: string
+        required: false
+        in: query
+        description: Type of transaction or a operation
+      - name: from_amount
+        type: string
+        required: false
+        in: query
+        description: minimum amount of transactions to retrieve
+      - name: to_amount
+        type: string
+        required: false
+        in: query
+        description: maximun amount of transactions to retrieve
+      - name: currency
+        type: string
+        required: false
+        in: query
+        description: Currency Support Values INFO-DATA:GET&#47;Currency (ISO 4217)
+      - name: sort_order_date
+        type: string
+        required: false
+        in: query
+        description: This field allows sorting the results attending to the transaction’s
+          operation date. <br> Allowed values ‘D – Descending, A – Ascending’
+      - name: transaction_type_CP
+        type: string
+        required: false
+        in: query
+        description: 'This field allows choosing if we want to retrieve only the already
+          consolidated (definitive) transactions, or also the accounts provisionally
+          posted during the business date that still need to be consolidated.<br>
+          Allowed Values : C – Consolidated transactions only, P – Include only provisional
+          transactions. <br> If no value is specified, all the transactions (consolidated
+          + provisional will be listed).'
+      - name: _offset
+        type: string
+        required: false
+        in: query
+        description: This field indicates to skip that many rows before beginning
+          to return rows. if this field is omitted, firts page will be return.
+      - name: _limit
+        type: string
+        required: false
+        in: query
+        description: This field indicates the maximum rows returned in response, it
+          means, no more than that many rows will be returned (but possibly less,
+          if the query itself yields less rows).
+      - name: sign_Amount
+        type: string
+        required: false
+        in: query
+        description: Credit or Debit (C/D)
+      - name: X-Santander-Global-Id
+        type: string
+        required: false
+        in: header
+        description: Traceability E2E Header
+      - name: Device
+        type: string
+        required: false
+        in: header
+        description: 'Device information header:<br>   web: Default Value if no value
+          is specified <br>   mobile: If you are using this API from a Smartphone
+          <br>   tablet: Use this value if you are using this API from a tablet or
+          similar device <br>   watch: Use this value if you are using the API from
+          a smartwatch <br>                  Please note that not all the APIs are
+          able to accommodate the info to a specific device’s format needs. We will
+          highlight those fields which are sensitive to this parameter.'
+      - name: Authorization
+        type: string
+        required: true
+        in: header
+        description: Authorization Security Header. Example:<br> Bearer 923ioh89r23ohwedh823_ohdn9hite89yyugfsdf
+      - name: Accept-Language
+        type: string
+        required: false
+        in: header
+        description: 'Language Code (2 alphanumeric positions according to ISO 639_1)
+          + Country_Code (2 alphanumeric positions according to ISO 3166_1). Example:
+          en-US'
+      - name: account_id_type
+        type: string
+        required: true
+        in: query
+        description: 'Type off account id:  <br><br> INT: Internal Platform Number
+          <br> EEEEBBBBPPPAAAAAAA <br> E – Entity ID &#47; B – Branch ID &#47;P –
+          Product Type &#47; A – Account Number <br> <br> ABA: ABA format <br> RRRRRRRRRAAAAAAAAAAAAAAAAA
+          <br> RRRRRRRRR: Routing Number – Reference: https:&#47;&#47;en.wikipedia.org&#47;wiki&#47;Routing_transit_number#Routing_number_format
+          <br> AAAAAAAAAAAAAAAAA: Account Number (it can be less than 17 positions)
+          <br> <br> LSP: Local Spain <br> EEEEBBBBCCAAAAAAAAAA <br> E – Entity ID
+          &#47; B – Branch ID &#47; C – Control Digit &#47;A – Account Number <br>
+          <br> IBA: IBAN code. Reference: https:&#47;&#47;es.wikipedia.org&#47;wiki&#47;International_Bank_Account_Number
+          <br> <br> LUK: Local UK <br> <br> LGE: Local Germany format <br> <br> LPT:
+          Local Portugal Number <br> <br>'
+      - name: ApimForceCatalogSecurity
+        type: string
+        required: false
+        in: header
+        description: ApimForceCatalogSecurity
+      summary: Account transaction  list Inquiry, Allows filtering by date period,
+        transaction type and amount
+      description: |-
+        It provides the account transaction list sorted by operation date. Allows filtering by operation date, transaction type, currency and amount.
+        The account number should be provided as input, and can be restricted incorporating time period (start and end dates), transaction type, amount and currency. Choosing whether you want to sort descending or ascending by date.
+        Local and IBAN account format types are supported, and shall be specified in the input data.
+        If start and end of the period are not filled up, the transactions made in last 2 month will be rerturned.
+        The requested period can not exceed 12 months.
+  /{account_id}/balances:
+    get:
+      responses:
+        200:
+          description: 200 OK
+          schema:
+            $ref: '#/definitions/returnBalances'
+        204:
+          description: No Content
+          schema:
+            type: string
+        400:
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/GeneralError'
+        401:
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/GeneralError'
+        403:
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/GeneralError'
+        404:
+          description: Not Found
+          schema:
+            $ref: '#/definitions/GeneralError'
+        500:
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/GeneralError'
+      parameters:
+      - name: account_id
+        type: string
+        required: true
+        in: path
+        description: Number Account Identification
+      - name: X-Santander-Global-Id
+        type: string
+        required: false
+        in: header
+        description: Traceability E2E Header
+      - name: Device
+        type: string
+        required: false
+        in: header
+        description: 'Device information header:<br>   web: Default Value if no value
+          is specified <br>   mobile: If you are using this API from a Smartphone
+          <br>   tablet: Use this value if you are using this API from a tablet or
+          similar device <br>   watch: Use this value if you are using the API from
+          a smartwatch <br>                  Please note that not all the APIs are
+          able to accommodate the info to a specific device’s format needs. We will
+          highlight those fields which are sensitive to this parameter.'
+      - name: Authorization
+        type: string
+        required: true
+        in: header
+        description: Authorization Security Header. Example:<br> Bearer 923ioh89r23ohwedh823_ohdn9hite89yyugfsdf
+      - name: Accept-Language
+        type: string
+        required: false
+        in: header
+        description: 'Language Code (2 alphanumeric positions according to ISO 639_1)
+          + Country_Code (2 alphanumeric positions according to ISO 3166_1). Example:
+          en-US'
+      - name: account_id_type
+        type: string
+        required: true
+        in: query
+        description: 'Type off account id:  <br><br> INT: Internal Platform Number
+          <br> EEEEBBBBPPPAAAAAAA <br> E – Entity ID &#47; B – Branch ID &#47;P –
+          Product Type &#47; A – Account Number <br> <br> ABA: ABA format <br> RRRRRRRRRAAAAAAAAAAAAAAAAA
+          <br> RRRRRRRRR: Routing Number – Reference: https:&#47;&#47;en.wikipedia.org&#47;wiki&#47;Routing_transit_number#Routing_number_format
+          <br> AAAAAAAAAAAAAAAAA: Account Number (it can be less than 17 positions)
+          <br> <br> LSP: Local Spain <br> EEEEBBBBCCAAAAAAAAAA <br> E – Entity ID
+          &#47; B – Branch ID &#47; C – Control Digit &#47;A – Account Number <br>
+          <br> IBA: IBAN code. Reference: https:&#47;&#47;es.wikipedia.org&#47;wiki&#47;International_Bank_Account_Number
+          <br> <br> LUK: Local UK <br> <br> LGE: Local Germany format <br> <br> LPT:
+          Local Portugal Number <br> <br>'
+      - name: ApimForceCatalogSecurity
+        type: string
+        required: false
+        in: header
+        description: ApimForceCatalogSecurity
+      summary: Balances Account list Inquiry.  Retrieve currents account balances
+      description: "Gets list of current  balances of account.\nIn order to perform
+        this operation, it is neccesary to provide a savings or current account number
+        (several formats are allowed) .  \nIf result is correct, provides a list of
+        main currents balances  (Available, Witheld, Pending, Overdraft ...).\nPer
+        each balance is returned balance description, amount and currency"
+definitions:
+  ErrorItem:
+    properties:
+      description:
+        type: string
+        description: detailed description of the issue reported
+      code:
+        type: string
+        description: Unique alphanumeric human readable error code
+      message:
+        type: string
+        description: brief summary of issue reported
+      level:
+        type: string
+        description: 'different issue level: info, warning, error'
+    additionalProperties: true
+    description: Represents one error in operation
+  GeneralError:
+    description: Contains a Error list in operation
+    type: array
+    items:
+      $ref: '#/definitions/ErrorItem'
+  returnTransacionDetails:
+    properties:
+      content-language:
+        type: string
+        description: language returned
+        example: en-US
+      signAmount:
+        type: string
+        description: 'Represents if the transaction increases (Credit) or decreases
+          (Debit)  the balance of the account. Allowed values: C – Credit , D – Debit'
+        example: C
+      transactionCurrency:
+        type: string
+        description: currency of transaction
+        example: USD
+      amountTransaction:
+        type: number
+        description: transaction amount in the currency of the operation
+        format: double
+        example: 123456.050000
+      transactionDescription:
+        type: string
+        description: description of transaction
+        example: internal transfer
+      transactionType:
+        type: string
+        description: type of transaction code
+        example: TRF
+      interestDate:
+        type: string
+        description: interest date of transaction
+        format: date
+        example: "20161025"
+      operationDate:
+        type: string
+        description: operation date of transaction
+        format: date
+        example: "20161021"
+      transactionId:
+        type: string
+        description: internal reference to transaction identification
+        example: "99999"
+      accountIdType:
+        type: string
+        description: 'Type off account id:  <br><br> INT: Internal Platform Number
+          <br> EEEEBBBBPPPAAAAAAA <br> E – Entity ID &#47; B – Branch ID &#47;P –
+          Product Type &#47; A – Account Number <br> <br> ABA: ABA format <br> RRRRRRRRRAAAAAAAAAAAAAAAAA
+          <br> RRRRRRRRR: Routing Number – Reference: https:&#47;&#47;en.wikipedia.org&#47;wiki&#47;Routing_transit_number#Routing_number_format
+          <br> AAAAAAAAAAAAAAAAA: Account Number (it can be less than 17 positions)
+          <br> <br> LSP: Local Spain <br> EEEEBBBBCCAAAAAAAAAA <br> E – Entity ID
+          &#47; B – Branch ID &#47; C – Control Digit &#47;A – Account Number <br>
+          <br> IBA: IBAN code. Reference: https:&#47;&#47;es.wikipedia.org&#47;wiki&#47;International_Bank_Account_Number
+          <br> <br> LUK: Local UK <br> <br> LGE: Local Germany format <br> <br> LPT:
+          Local Portugal Number <br> <br>'
+        example: IBA
+      accountId:
+        type: string
+        example: ES88 0049 0010 10 2895810010
+        description: Number Account Identification
+    additionalProperties: false
+    description: Transacion Details
+  returnTransactions:
+    properties:
+      content-language:
+        type: string
+        description: language returned
+        example: en-US
+      _next:
+        type: string
+        description: This field contains a HATEOAS link to navigates to the next page
+          according to input parameters.
+        example: https://islgatwc01.scisb.isban.corp:452/santander-usa/intranet-client-sandbox-cer/accounts/2313726917672140515/transactions?account_id_type=ABA&_offset=664
+      _prev:
+        type: string
+        description: This field contains a HATEOAS link to navigates to the previous
+          page according to input parameters.
+        example: https://islgatwc01.scisb.isban.corp:452/santander-usa/intranet-client-sandbox-cer/accounts/2313726917672140515/transactions?account_id_type=ABA
+      _first:
+        type: string
+        description: This field contains a HATEOAS link to navigates to the first
+          page according to input parameters.
+        example: https://islgatwc01.scisb.isban.corp:452/santander-usa/intranet-client-sandbox-cer/accounts/2313726917672140515/transactions?account_id_type=ABA&transaction_type_CP=C&_offset=664
+      listTransactions:
+        $ref: '#/definitions/listTransactions'
+        description: listTransactions
+      sortOrderDate:
+        type: string
+        description: This field allows sorting the results attending to the transaction’s
+          operation date. <br> Allowed values ‘D – Descending, A – Ascending’
+        example: D
+      currency:
+        type: string
+        description: requeted currency or spaces
+        example: USD
+      toAmount:
+        type: number
+        description: if to_amount is filled
+        example: 123456.050000
+        format: float
+      fromAmount:
+        type: number
+        description: if from_amount is filled
+        example: 123456.050000
+        format: float
+      transactionType_CP:
+        type: string
+        description: Type status of transaction (C:Consolidate; P:Provisional)
+        example: C
+      toDate:
+        type: string
+        format: date
+        description: 'from_date requested o from date assumed '
+        example: "20160131"
+      fromDate:
+        type: string
+        format: date
+        description: 'from_date requested o from date assumed '
+        example: "20160131"
+      accountIdType:
+        type: string
+        description: 'Type off account id:  <br><br> INT: Internal Platform Number
+          <br> EEEEBBBBPPPAAAAAAA <br> E – Entity ID &#47; B – Branch ID &#47;P –
+          Product Type &#47; A – Account Number <br> <br> ABA: ABA format <br> RRRRRRRRRAAAAAAAAAAAAAAAAA
+          <br> RRRRRRRRR: Routing Number – Reference: https:&#47;&#47;en.wikipedia.org&#47;wiki&#47;Routing_transit_number#Routing_number_format
+          <br> AAAAAAAAAAAAAAAAA: Account Number (it can be less than 17 positions)
+          <br> <br> LSP: Local Spain <br> EEEEBBBBCCAAAAAAAAAA <br> E – Entity ID
+          &#47; B – Branch ID &#47; C – Control Digit &#47;A – Account Number <br>
+          <br> IBA: IBAN code. Reference: https:&#47;&#47;es.wikipedia.org&#47;wiki&#47;International_Bank_Account_Number
+          <br> <br> LUK: Local UK <br> <br> LGE: Local Germany format <br> <br> LPT:
+          Local Portugal Number <br> <br>'
+        example: IBA
+      accountId:
+        type: string
+        description: Number Account Identification
+        example: ES88 0049 0010 10 2895810010
+    additionalProperties: false
+    description: returnTransactions
+  listTransactions:
+    type: array
+    items:
+      $ref: '#/definitions/listTransactionsArray'
+    description: listTransactions
+  listTransactionsArray:
+    properties:
+      _transactionDetail:
+        type: string
+        description: This field contains a HATEOAS link to navigates to the &#47;accounts&#47;{account_id}
+          &#47;transactions&#47; {transaction_id}
+        example: https://islgatwc01.scisb.isban.corp:452/santander-usa/intranet-client-sandbox-cer/accounts/2313726917672140515/transactions/4556?account_id_type=ABA
+      balanceResult:
+        type: number
+        description: Balance after transaction. This field will not be part of the
+          output when the device specfied in the header is a mobile app.
+        format: double
+        example: 123456
+      transactionCurrency:
+        type: string
+        description: Currency Support Values INFO-DATA:GET&#47;Currency (ISO 4217)
+        example: USD
+      amountTransaction:
+        type: number
+        description: Transaction amount in the currency of the operation
+        example: 123456
+        format: double
+      transactionDescription:
+        type: string
+        description: Description of Transaction
+        example: HU098123789498
+      transactionId:
+        type: string
+        description: Internal transaction reference to identification
+        example: "99999"
+      transactionType:
+        type: string
+        description: Type of transaction code.This field will not be part of the output
+          when the device specfied in the header is a mobile app.
+        example: TRF
+      interestDate:
+        type: string
+        description: Interest date of transaction. This field will not be part of
+          the output when the device specfied in the header is a mobile app.
+        format: date
+        example: "20160131"
+      operationDate:
+        type: string
+        format: date
+        example: "20160131"
+        description: Operative date of movement  (YYYYMMDD format)
+    additionalProperties: false
+    description: listTransactionsArray
+  balanceTypesArray:
+    type: array
+    items:
+      $ref: '#/definitions/balanceTypes'
+    description: balanceTypes
+  balanceTypes:
+    properties:
+      balanceCurrency:
+        type: string
+        description: Currency of balance
+        example: USD
+      balance:
+        type: number
+        description: Amount balance
+        example: 123456.050000
+        format: float
+      balanceTypeDescription:
+        type: string
+        description: balanceTypeDescription
+        example: Principal balance
+    additionalProperties: false
+    description: balanceTypes
+  returnBalances:
+    additionalProperties: false
+    description: returnBalances
+    properties:
+      content-language:
+        type: string
+        description: language returned
+        example: en-US
+      balanceTypes:
+        description: balanceTypes
+        items:
+          type: string
+        $ref: '#/definitions/balanceTypesArray'
+      currentTime:
+        type: string
+        description: Time on which the information has been extracted  (HHMMSS)
+        example: "190002"
+      currentDate:
+        type: string
+        format: date
+        description: Date on which the information has been extracted  (YYYYMMDD)
+        example: "20160131"
+      accountIdType:
+        type: string
+        description: 'Type off account id:  <br><br> INT: Internal Platform Number
+          <br> EEEEBBBBPPPAAAAAAA <br> E – Entity ID &#47; B – Branch ID &#47;P –
+          Product Type &#47; A – Account Number <br> <br> ABA: ABA format <br> RRRRRRRRRAAAAAAAAAAAAAAAAA
+          <br> RRRRRRRRR: Routing Number – Reference: https:&#47;&#47;en.wikipedia.org&#47;wiki&#47;Routing_transit_number#Routing_number_format
+          <br> AAAAAAAAAAAAAAAAA: Account Number (it can be less than 17 positions)
+          <br> <br> LSP: Local Spain <br> EEEEBBBBCCAAAAAAAAAA <br> E – Entity ID
+          &#47; B – Branch ID &#47; C – Control Digit &#47;A – Account Number <br>
+          <br> IBA: IBAN code. Reference: https:&#47;&#47;es.wikipedia.org&#47;wiki&#47;International_Bank_Account_Number
+          <br> <br> LUK: Local UK <br> <br> LGE: Local Germany format <br> <br> LPT:
+          Local Portugal Number <br> <br>'
+        example: IBA
+      accountId:
+        type: string
+        description: Number Account Identification
+        example: ES88 0049 0010 10 2895810010
+tags: []
+host: islgatwc01.scisb.isban.corp:452
